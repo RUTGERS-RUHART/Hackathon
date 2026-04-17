@@ -52,6 +52,9 @@ SQUAT_ANGLE      = 150.0   # knee angle below this = squat
 ARMS_OUT_Y_TOL   = 0.08    # how level wrists must be vs shoulders
 ARMS_OUT_X_SPAN  = 0.45    # min wrist-to-wrist width (normalised)
 ARM_UP_THRESHOLD = 0.2     # wrist must be this far above shoulder
+WRIST_THRESHOLD = 0.1
+WRIST_RELEASE_THRESHOLD = 0.25
+fireballShot = False
 
 def knee_angle(hip, knee, ankle):
     """Angle at the knee in degrees."""
@@ -93,6 +96,16 @@ def get_keys(lm):
     if sum(angles)/len(angles) < SQUAT_ANGLE:
         keys.add('s')
 
+    # E - fireball (wrists close together)
+    global fireballShot
+    if (abs(lw.x-rw.x) <= WRIST_THRESHOLD) and (fireballShot==False):
+        fireballShot=True
+        keys.add('e')
+
+    if abs(lw.x-rw.x) >= WRIST_RELEASE_THRESHOLD:
+        fireballShot=False
+
+    print(lw.x-rw.x)
     return keys
 
 def draw_skeleton(frame, landmarks):
