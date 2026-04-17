@@ -56,6 +56,8 @@ class Player(pygame.sprite.Sprite):
 
     # ── drawing ──────────────────────────────────────────────────────────────
 
+
+
     def _draw_idle(self, duck=False):
         s = self.image
         s.fill((0, 0, 0, 0))
@@ -94,10 +96,23 @@ class Player(pygame.sprite.Sprite):
     def _draw_jump(self):
         self._draw_idle()
 
+
+
+
     def _draw_duck(self):
         s = self.image
         s.fill((0, 0, 0, 0))
         self._draw_idle(duck=True)
+
+    def fireball(self, enemy):
+        x = pygame.draw.circle(100, (255, 0, 0), 50)
+        
+        
+
+
+
+
+
 
     # ── update ───────────────────────────────────────────────────────────────
 
@@ -192,6 +207,35 @@ class Player(pygame.sprite.Sprite):
 
         if self.facing == -1:
             self.image = pygame.transform.flip(self.image, True, False)
+
+
+class Fireball(pygame.sprite.Sprite):
+    def __init__(self, x, y, lifetime=100):
+        super().__init__()
+        self.image = pygame.Surface((TILE, TILE), pygame.SRCALPHA)
+        self._draw()
+        self.rect = self.image.get_rect(bottomleft=(x, y))
+        self.speed = 5.5
+        self._origin_x = x
+        self._dir = 1
+
+    def _draw(self):
+        s, t = self.image, TILE
+        s.fill((0, 0, 0, 0))
+
+        #ball
+        pygame.draw.circle(s, ENEMY_EYE, (t // 2 - 7, t // 4), 5)
+        pygame.draw.circle(s, ENEMY_EYE, (t // 2 + 7, t // 4), 5)
+
+    def update(self):
+        self.rect.x += self._dir * self.speed
+
+    def _check_enemies(self, enemies):
+        for e in pygame.sprite.spritecollide(self, enemies, False):
+            if self.vy > 0 and self.rect.bottom < e.rect.centery + 10:
+                e.kill()
+                #.score += 100
+                self.kill()
 
 
 class Platform(pygame.sprite.Sprite):
